@@ -1,0 +1,38 @@
+body {
+    background: linear-gradient(200deg, rgb(103, 161, 179), rgb(255, 255, 255));
+    background-attachment: fixed;
+  }
+#title {
+    text-align: center;
+    margin:20px;
+}
+.col-sm-6 {
+    background:#f8eee3;
+    padding :50px;
+}
+#myForm {
+    margin-bottom: 50px;
+    background-color: white;
+    padding:20px;
+}
+#drop_box {
+    border: dashed 1px gray;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+}
+#notice {
+    height: 200px;
+    padding-bottom:50px;
+    border:3px solid;
+    background-color: white;
+}
+#drop_zone {
+    border: 3px solid ;
+    height: 200px;
+    background-color: white;
+    padding: 10px
+}
+.dragging {
+    background-color: Silver !important;
+}
