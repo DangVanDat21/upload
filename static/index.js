@@ -1,11 +1,19 @@
 const chunkSize = 4*1024*1024;
 const endpoint = "http://127.0.0.1:8888/";
 
-function notice(msg){
-    const para = document.createElement("p");
-    para.innerText = msg ;
+function notice(msg,classname){
     const notice = document.getElementById("notice");
-    notice.appendChild(para); 
+    const collection = document.getElementsByClassName(classname)
+    if (collection.length==0){
+        const para = document.createElement("p");
+        para.classList.add(classname);
+        notice.insertBefore(para,notice.firstChild); 
+    }
+    else{
+        const para = collection[0]
+        para.innerText = msg ; 
+    };
+    
 }
 async function post(filename){
     let postReponse = await fetch(endpoint, {
@@ -45,7 +53,8 @@ async function putInLoop(chunks,filename,fileSize,conectionID){
     for (const chunk of chunks){
         let checker = false
         while (checker == false){
-            notice("File \""+filename+"\" is uploading "+((block-1)/numberofChunks*100).toString()+" %")
+            msg = "File \""+filename+"\" is uploading "+((block-1)/numberofChunks*100).toString()+" %"
+            notice(msg,conectionID)
             let result = await  put(chunk,conectionID,block,fileSize);
             let status = result.status 
             if (status == 200){
@@ -63,22 +72,27 @@ async function upload(file){
     let filename = file.name;
     let postResponse = await post(filename);
     if (postResponse.status == 200){
-        conectionID = await postResponse.text()
+        let conectionID = await postResponse.text()
         let chunks = read_in_chunks(file);
         let rerult = await putInLoop(chunks,filename,file.size,conectionID)
         if (rerult == true) {
-            notice("File "+filename+" was uploaded successfully");
+            let msg = "File "+filename+" was uploaded successfully"
+            notice(msg,conectionID);
             return
         }
-        notice("Failed to upload file "+filename+", timeout");
+        let msg = "Failed to upload file "+filename+", timeout"
+        notice(msg,conectionID);
         return
+    } else{
+        let msg = "Failed to upload file "+filename
+        notice(msg,"400");
     }
     return
 }
 function dropHandler(ev) {
     console.log('File(s) dropped');
     ev.preventDefault();
-    box = document.getElementById("drop_zone");
+    let box = document.getElementById("drop_zone");
     box.classList.remove('dragging');
     if (ev.dataTransfer.items) {
       [...ev.dataTransfer.items].forEach((item, i) => {
@@ -92,12 +106,12 @@ function dropHandler(ev) {
   }
 function dragOverHandler(ev) {
     ev.preventDefault();
-    box = document.getElementById("drop_zone");
+    let box = document.getElementById("drop_zone");
     box.classList.add('dragging');
   }
 function dragLeaveHandler(ev) {
     ev.preventDefault();
-    box = document.getElementById("drop_zone");
+    let box = document.getElementById("drop_zone");
     box.classList.remove('dragging');
 }
 window.onload=function(){
