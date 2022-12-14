@@ -9,10 +9,6 @@ class IndexHandler(tornado.web.RequestHandler):
     def post(self,arg):
         storage = self.storage
         filename = self.request.body.decode("utf-8")
-        try:
-            os.remove(storage+filename)
-        except:
-            pass
         conectionID = uuid.uuid4()
         os.mkdir(storage+str(conectionID))
         f = open(storage+"\\"+str(conectionID)+"\\"+filename,"ab")
@@ -24,15 +20,19 @@ class IndexHandler(tornado.web.RequestHandler):
         conectionID = conectionID
         Content_Range = self.request.headers["Content-Range"]
         next = Content_Range.split(" ")[1].split("-")[0]
+        last = Content_Range.split("-")[1].split("/")[0]
         next = int(next)
+        last = int(last)
         filename=os.listdir(storage+"\\"+conectionID)[0]
-        f = open(storage+"\\"+conectionID+"\\"+filename,"r+b")
-        f.seek(next)
-        f.truncate()
-        f.write(self.request.body)
-        f.close()
-        self.write("OK")
-    
+        filedir=storage+"\\"+conectionID+"\\"+filename
+        if (last > os.stat(filedir).st_size):
+            with open(filedir,"r+b") as f:
+                f.seek(next)
+                f.write(self.request.body)
+            self.write("OK")
+        else:
+            self.write("OK")
+
 
 settings = {
 "cookie_secret": "__TODO:_GENERATE_YOUR_OWN_RANDOM_VALUE_HERE__",
